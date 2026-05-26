@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 import Navbar from "./Components/Navbar";
+
+import RankPage from "./Components/RankPage";
+
+
 import VentasSeguros from "./Components/ventasseguros";
 import VetasConsumos from "./Components/vetasconsumos";
 import VentasTarjetas from "./Components/ventastarjetas";
@@ -38,6 +42,11 @@ function App() {
     <>
       <Navbar />
       <main>
+        <AnimatedSection id="RankPage" delay={0.1}>
+          <RankPage />
+        </AnimatedSection> 
+
+
         <AnimatedSection id="ventasseguros" delay={0.2}>
           <VentasSeguros />
         </AnimatedSection>

@@ -33,9 +33,9 @@ const TarjetasPage = () => {
   // Subtotal sin bono
   const subtotal = ganAzul + ganOro + ganPlatino;
 
-  // Bono
+  // Bono  HAY QUE ARREGLAR ESTOOOOO! 
   const bono = totalTarjetasVendidas > 1
-    ? totalTarjetasVendidas * 100
+    ? totalTarjetasVendidas * 0
     : 0;
 
   const total = subtotal + bono;
