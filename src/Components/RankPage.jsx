@@ -1,40 +1,23 @@
+// src/pages/RankPage.jsx
+
+import {
+  vendedores,
+  metas,
+} from "../data/database";
+
 export default function RankPage() {
-  const vendedores = [
-    {
-      nombre: "Carlos",
-      seguros: 10,
-      creditos: 42000,
-      efi: 30000,
-      tarjetas: 1,
-    },
-    {
-      nombre: "Ana",
-      seguros: 14,
-      creditos: 65000,
-      efi: 52000,
-      tarjetas: 2,
-    },
-    {
-      nombre: "Luis",
-      seguros: 7,
-      creditos: 30000,
-      efi: 25000,
-      tarjetas: 0,
-    },
-  ];
-
-  const metas = {
-    seguros: 12,
-    creditos: 50000,
-    efi: 50000,
-    tarjetas: 1,
-  };
-
   const calcularPuntaje = (vendedor) => {
-    const porcentajeSeguros = vendedor.seguros / metas.seguros;
-    const porcentajeCreditos = vendedor.creditos / metas.creditos;
-    const porcentajeEFI = vendedor.efi / metas.efi;
-    const porcentajeTarjetas = vendedor.tarjetas / metas.tarjetas;
+    const porcentajeSeguros =
+      vendedor.seguros / metas.seguros;
+
+    const porcentajeCreditos =
+      vendedor.creditos / metas.creditos;
+
+    const porcentajeEFI =
+      vendedor.efi / metas.efi;
+
+    const porcentajeTarjetas =
+      vendedor.tarjetas / metas.tarjetas;
 
     return (
       porcentajeSeguros +
@@ -45,163 +28,170 @@ export default function RankPage() {
   };
 
   const ranking = [...vendedores].sort(
-    (a, b) => calcularPuntaje(b) - calcularPuntaje(a)
+    (a, b) =>
+      calcularPuntaje(b) -
+      calcularPuntaje(a)
   );
 
-  const cumplioMeta = (valor, meta) => valor >= meta;
+  const cumplioMeta = (valor, meta) =>
+    valor >= meta;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-8 mb-8">
-          <h1 className="text-4xl font-bold text-center mb-2">
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8">
+          <h1 className="text-3xl font-bold text-center">
             Ranking de Ventas
           </h1>
-          <p className="text-center text-gray-500">
-            Seguimiento diario de vendedores
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-2xl shadow-md p-5 border-l-4 border-blue-500">
-            <h2 className="font-bold text-lg">Meta Seguros</h2>
-            <p className="text-3xl font-bold text-blue-600">12</p>
-          </div>
+        <div className="space-y-5">
+          {ranking.map((vendedor, index) => {
+            const puntaje =
+              calcularPuntaje(vendedor);
 
-          <div className="bg-white rounded-2xl shadow-md p-5 border-l-4 border-green-500">
-            <h2 className="font-bold text-lg">Meta Créditos</h2>
-            <p className="text-3xl font-bold text-green-600">50K</p>
-          </div>
+            return (
+              <div
+                key={vendedor.id}
+                className="bg-white rounded-3xl shadow-xl p-5"
+              >
+                <div className="flex justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold">
+                      #{index + 1}
+                    </h2>
 
-          <div className="bg-white rounded-2xl shadow-md p-5 border-l-4 border-purple-500">
-            <h2 className="font-bold text-lg">Meta EFI</h2>
-            <p className="text-3xl font-bold text-purple-600">50K</p>
-          </div>
+                    <p className="text-xl font-semibold">
+                      {vendedor.nombre}
+                    </p>
+                  </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-5 border-l-4 border-orange-500">
-            <h2 className="font-bold text-lg">Meta TDC</h2>
-            <p className="text-3xl font-bold text-orange-600">1</p>
-          </div>
-        </div>
+                  <div className="text-5xl">
+                    {index === 0
+                      ? "🥇"
+                      : index === 1
+                      ? "🥈"
+                      : index === 2
+                      ? "🥉"
+                      : "🏅"}
+                  </div>
+                </div>
 
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-900 text-white">
-                <tr>
-                  <th className="p-4">#</th>
-                  <th className="p-4">Vendedor</th>
-                  <th className="p-4">Seguros</th>
-                  <th className="p-4">Créditos</th>
-                  <th className="p-4">EFI</th>
-                  <th className="p-4">TDC</th>
-                  <th className="p-4">Avance</th>
-                </tr>
-              </thead>
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <div className="bg-gray-100 rounded-2xl p-4">
+                    <p className="text-sm text-gray-500">
+                      Seguros
+                    </p>
 
-              <tbody>
-                {ranking.map((vendedor, index) => {
-                  const puntaje = calcularPuntaje(vendedor);
-
-                  return (
-                    <tr
-                      key={index}
-                      className={`border-b hover:bg-gray-50 transition ${
-                        index === 0
-                          ? "bg-yellow-100"
-                          : index === 1
-                          ? "bg-gray-100"
-                          : index === 2
-                          ? "bg-orange-100"
-                          : ""
+                    <p
+                      className={`text-2xl font-bold ${
+                        cumplioMeta(
+                          vendedor.seguros,
+                          metas.seguros
+                        )
+                          ? "text-green-600"
+                          : "text-red-500"
                       }`}
                     >
-                      <td className="p-4 font-bold text-xl">
-                        {index + 1}
-                      </td>
+                      {vendedor.seguros}
+                    </p>
+                  </div>
 
-                      <td className="p-4 font-semibold">
-                        {vendedor.nombre}
-                      </td>
+                  <div className="bg-gray-100 rounded-2xl p-4">
+                    <p className="text-sm text-gray-500">
+                      Créditos
+                    </p>
 
-                      <td
-                        className={`p-4 font-bold ${
-                          cumplioMeta(vendedor.seguros, metas.seguros)
-                            ? "text-green-600"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {vendedor.seguros}
-                      </td>
+                    <p
+                      className={`text-2xl font-bold ${
+                        cumplioMeta(
+                          vendedor.creditos,
+                          metas.creditos
+                        )
+                          ? "text-green-600"
+                          : "text-red-500"
+                      }`}
+                    >
+                      $
+                      {vendedor.creditos.toLocaleString()}
+                    </p>
+                  </div>
 
-                      <td
-                        className={`p-4 font-bold ${
-                          cumplioMeta(vendedor.creditos, metas.creditos)
-                            ? "text-green-600"
-                            : "text-red-500"
-                        }`}
-                      >
-                        ${vendedor.creditos.toLocaleString()}
-                      </td>
+                  <div className="bg-gray-100 rounded-2xl p-4">
+                    <p className="text-sm text-gray-500">
+                      EFI
+                    </p>
 
-                      <td
-                        className={`p-4 font-bold ${
-                          cumplioMeta(vendedor.efi, metas.efi)
-                            ? "text-green-600"
-                            : "text-red-500"
-                        }`}
-                      >
-                        ${vendedor.efi.toLocaleString()}
-                      </td>
+                    <p
+                      className={`text-2xl font-bold ${
+                        cumplioMeta(
+                          vendedor.efi,
+                          metas.efi
+                        )
+                          ? "text-green-600"
+                          : "text-red-500"
+                      }`}
+                    >
+                      $
+                      {vendedor.efi.toLocaleString()}
+                    </p>
+                  </div>
 
-                      <td
-                        className={`p-4 font-bold ${
-                          cumplioMeta(vendedor.tarjetas, metas.tarjetas)
-                            ? "text-green-600"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {vendedor.tarjetas}
-                      </td>
+                  <div className="bg-gray-100 rounded-2xl p-4">
+                    <p className="text-sm text-gray-500">
+                      TDC
+                    </p>
 
-                      <td className="p-4">
-                        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                          <div
-                            className={`h-4 rounded-full ${
-                              puntaje >= 4
-                                ? "bg-green-500"
-                                : puntaje >= 2.5
-                                ? "bg-yellow-500"
-                                : "bg-red-500"
-                            }`}
-                            style={{
-                              width: `${Math.min((puntaje / 4) * 100, 100)}%`,
-                            }}
-                          ></div>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    <p
+                      className={`text-2xl font-bold ${
+                        cumplioMeta(
+                          vendedor.tarjetas,
+                          metas.tarjetas
+                        )
+                          ? "text-green-600"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {vendedor.tarjetas}
+                    </p>
+                  </div>
+                </div>
 
-        <div className="mt-8 bg-white rounded-3xl shadow-xl p-6">
-          <h2 className="text-2xl font-bold mb-4">
-            Reglas del Ranking
-          </h2>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">
+                      Avance
+                    </span>
 
-          <ul className="space-y-2 text-gray-700">
-            <li>✅ Verde = Meta alcanzada</li>
-            <li>🟡 Amarillo = Avance intermedio</li>
-            <li>🔴 Rojo = Debajo de la meta</li>
-            <li>
-              📈 El ranking se calcula según el porcentaje de cumplimiento
-              total.
-            </li>
-          </ul>
+                    <span className="font-bold">
+                      {Math.round(
+                        (puntaje / 4) * 100
+                      )}
+                      %
+                    </span>
+                  </div>
+
+                  <div className="w-full bg-gray-300 rounded-full h-5 overflow-hidden">
+                    <div
+                      className={`h-5 rounded-full ${
+                        puntaje >= 4
+                          ? "bg-green-500"
+                          : puntaje >= 2.5
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
+                      }`}
+                      style={{
+                        width: `${Math.min(
+                          (puntaje / 4) * 100,
+                          100
+                        )}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

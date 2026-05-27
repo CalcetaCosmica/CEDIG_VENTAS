@@ -5,7 +5,7 @@ import { useInView } from "react-intersection-observer";
 import Navbar from "./Components/Navbar";
 
 import RankPage from "./Components/RankPage";
-
+import AdminPage from "./Components/AdminPage";
 
 import VentasSeguros from "./Components/ventasseguros";
 import VetasConsumos from "./Components/vetasconsumos";
@@ -46,20 +46,24 @@ function App() {
           <RankPage />
         </AnimatedSection> 
 
+        <AnimatedSection id="AdminPage" delay={0.2}>
+          <AdminPage />
+        </AnimatedSection> 
 
-        <AnimatedSection id="ventasseguros" delay={0.2}>
+
+        <AnimatedSection id="ventasseguros" delay={0.4}>
           <VentasSeguros />
         </AnimatedSection>
 
-        <AnimatedSection id="vetasconsumos" delay={0.4}>
+        <AnimatedSection id="vetasconsumos" delay={0.6}>
           <VetasConsumos />
         </AnimatedSection>
 
-        <AnimatedSection id="ventastarjetas" delay={0.6}>
+        <AnimatedSection id="ventastarjetas" delay={0.8}>
           <VentasTarjetas />
         </AnimatedSection>
 
-        <AnimatedSection id="ganamas" delay={0.8}>
+        <AnimatedSection id="ganamas" delay={1.0}>
           <Ganamas />
         </AnimatedSection>
       </main>
