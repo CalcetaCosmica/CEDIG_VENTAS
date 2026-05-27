@@ -1,11 +1,21 @@
 // src/pages/RankPage.jsx
 
+import { useEffect, useState } from "react";
+
 import {
-  vendedores,
+  vendedores as vendedoresDB,
   metas,
 } from "../data/database";
 
 export default function RankPage() {
+  const [vendedores, setVendedores] =
+    useState([]);
+
+  // CARGAR DATOS DE LA "BASE"
+  useEffect(() => {
+    setVendedores([...vendedoresDB]);
+  }, []);
+
   const calcularPuntaje = (vendedor) => {
     const porcentajeSeguros =
       vendedor.seguros / metas.seguros;
@@ -37,38 +47,110 @@ export default function RankPage() {
     valor >= meta;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-[#eef4ff] p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8">
-          <h1 className="text-3xl font-bold text-center">
+        {/* HEADER */}
+        <div className="bg-gradient-to-r from-[#072146] to-[#004481] rounded-3xl shadow-2xl p-7 mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-center text-white">
             Ranking de Ventas
           </h1>
+
+          <p className="text-center text-blue-100 mt-2">
+            Dashboard de rendimiento
+          </p>
         </div>
 
+        {/* METAS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-3xl shadow-lg p-5 border-t-4 border-[#004481]">
+            <p className="text-sm text-gray-500">
+              Meta Seguros
+            </p>
+
+            <h2 className="text-3xl font-bold text-[#004481]">
+              {metas.seguros}
+            </h2>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-lg p-5 border-t-4 border-[#009ee3]">
+            <p className="text-sm text-gray-500">
+              Meta Créditos
+            </p>
+
+            <h2 className="text-3xl font-bold text-[#009ee3]">
+              $
+              {metas.creditos.toLocaleString()}
+            </h2>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-lg p-5 border-t-4 border-[#1464A5]">
+            <p className="text-sm text-gray-500">
+              Meta EFI
+            </p>
+
+            <h2 className="text-3xl font-bold text-[#1464A5]">
+              $
+              {metas.efi.toLocaleString()}
+            </h2>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-lg p-5 border-t-4 border-[#5BBEFF]">
+            <p className="text-sm text-gray-500">
+              Meta TDC
+            </p>
+
+            <h2 className="text-3xl font-bold text-[#5BBEFF]">
+              {metas.tarjetas}
+            </h2>
+          </div>
+        </div>
+
+        {/* CARDS */}
         <div className="space-y-5">
           {ranking.map((vendedor, index) => {
             const puntaje =
               calcularPuntaje(vendedor);
 
+            const porcentaje =
+              Math.min(
+                (puntaje / 4) * 100,
+                100
+              );
+
             return (
               <div
                 key={vendedor.id}
-                className="bg-white rounded-3xl shadow-xl p-5"
+                className={`rounded-3xl shadow-2xl p-5 transition-all duration-300 border-l-[10px] ${
+                  index === 0
+                    ? "bg-gradient-to-r from-[#072146] to-[#004481] text-white border-yellow-400"
+                    : index === 1
+                    ? "bg-white border-gray-400"
+                    : index === 2
+                    ? "bg-white border-orange-400"
+                    : "bg-white border-[#004481]"
+                }`}
               >
-                <div className="flex justify-between mb-4">
+                {/* TOP */}
+                <div className="flex justify-between items-center mb-5">
                   <div>
-                    <h2 className="text-2xl font-bold">
+                    <h2 className="text-3xl font-bold">
                       #{index + 1}
                     </h2>
 
-                    <p className="text-xl font-semibold">
+                    <p
+                      className={`text-xl font-semibold ${
+                        index === 0
+                          ? "text-blue-100"
+                          : "text-gray-700"
+                      }`}
+                    >
                       {vendedor.nombre}
                     </p>
                   </div>
 
                   <div className="text-5xl">
                     {index === 0
-                      ? "🥇"
+                      ? "👑"
                       : index === 1
                       ? "🥈"
                       : index === 2
@@ -77,9 +159,22 @@ export default function RankPage() {
                   </div>
                 </div>
 
+                {/* DATOS */}
                 <div className="grid grid-cols-2 gap-3 mb-5">
-                  <div className="bg-gray-100 rounded-2xl p-4">
-                    <p className="text-sm text-gray-500">
+                  <div
+                    className={`rounded-2xl p-4 ${
+                      index === 0
+                        ? "bg-white/10"
+                        : "bg-[#f4f8fd]"
+                    }`}
+                  >
+                    <p
+                      className={`text-sm ${
+                        index === 0
+                          ? "text-blue-100"
+                          : "text-gray-500"
+                      }`}
+                    >
                       Seguros
                     </p>
 
@@ -89,7 +184,7 @@ export default function RankPage() {
                           vendedor.seguros,
                           metas.seguros
                         )
-                          ? "text-green-600"
+                          ? "text-green-400"
                           : "text-red-500"
                       }`}
                     >
@@ -97,8 +192,20 @@ export default function RankPage() {
                     </p>
                   </div>
 
-                  <div className="bg-gray-100 rounded-2xl p-4">
-                    <p className="text-sm text-gray-500">
+                  <div
+                    className={`rounded-2xl p-4 ${
+                      index === 0
+                        ? "bg-white/10"
+                        : "bg-[#f4f8fd]"
+                    }`}
+                  >
+                    <p
+                      className={`text-sm ${
+                        index === 0
+                          ? "text-blue-100"
+                          : "text-gray-500"
+                      }`}
+                    >
                       Créditos
                     </p>
 
@@ -108,7 +215,7 @@ export default function RankPage() {
                           vendedor.creditos,
                           metas.creditos
                         )
-                          ? "text-green-600"
+                          ? "text-green-400"
                           : "text-red-500"
                       }`}
                     >
@@ -117,8 +224,20 @@ export default function RankPage() {
                     </p>
                   </div>
 
-                  <div className="bg-gray-100 rounded-2xl p-4">
-                    <p className="text-sm text-gray-500">
+                  <div
+                    className={`rounded-2xl p-4 ${
+                      index === 0
+                        ? "bg-white/10"
+                        : "bg-[#f4f8fd]"
+                    }`}
+                  >
+                    <p
+                      className={`text-sm ${
+                        index === 0
+                          ? "text-blue-100"
+                          : "text-gray-500"
+                      }`}
+                    >
                       EFI
                     </p>
 
@@ -128,7 +247,7 @@ export default function RankPage() {
                           vendedor.efi,
                           metas.efi
                         )
-                          ? "text-green-600"
+                          ? "text-green-400"
                           : "text-red-500"
                       }`}
                     >
@@ -137,8 +256,20 @@ export default function RankPage() {
                     </p>
                   </div>
 
-                  <div className="bg-gray-100 rounded-2xl p-4">
-                    <p className="text-sm text-gray-500">
+                  <div
+                    className={`rounded-2xl p-4 ${
+                      index === 0
+                        ? "bg-white/10"
+                        : "bg-[#f4f8fd]"
+                    }`}
+                  >
+                    <p
+                      className={`text-sm ${
+                        index === 0
+                          ? "text-blue-100"
+                          : "text-gray-500"
+                      }`}
+                    >
                       TDC
                     </p>
 
@@ -148,7 +279,7 @@ export default function RankPage() {
                           vendedor.tarjetas,
                           metas.tarjetas
                         )
-                          ? "text-green-600"
+                          ? "text-green-400"
                           : "text-red-500"
                       }`}
                     >
@@ -157,34 +288,44 @@ export default function RankPage() {
                   </div>
                 </div>
 
+                {/* PROGRESO */}
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="font-semibold">
-                      Avance
+                    <span
+                      className={`font-semibold ${
+                        index === 0
+                          ? "text-white"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      Cumplimiento
                     </span>
 
-                    <span className="font-bold">
+                    <span
+                      className={`font-bold ${
+                        index === 0
+                          ? "text-white"
+                          : "text-[#004481]"
+                      }`}
+                    >
                       {Math.round(
-                        (puntaje / 4) * 100
+                        porcentaje
                       )}
                       %
                     </span>
                   </div>
 
-                  <div className="w-full bg-gray-300 rounded-full h-5 overflow-hidden">
+                  <div
+                    className={`w-full rounded-full h-5 overflow-hidden ${
+                      index === 0
+                        ? "bg-white/20"
+                        : "bg-gray-200"
+                    }`}
+                  >
                     <div
-                      className={`h-5 rounded-full ${
-                        puntaje >= 4
-                          ? "bg-green-500"
-                          : puntaje >= 2.5
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
-                      }`}
+                      className="h-5 rounded-full bg-gradient-to-r from-[#009ee3] to-[#5BBEFF] transition-all duration-700"
                       style={{
-                        width: `${Math.min(
-                          (puntaje / 4) * 100,
-                          100
-                        )}%`,
+                        width: `${porcentaje}%`,
                       }}
                     ></div>
                   </div>
