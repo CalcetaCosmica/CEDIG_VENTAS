@@ -1,5 +1,8 @@
 // src/data/database.js
 
+const STORAGE_KEY = "vendedores";
+
+// DATOS INICIALES
 const vendedoresIniciales = [
   {
     id: 1,
@@ -29,6 +32,7 @@ const vendedoresIniciales = [
   },
 ];
 
+// METAS
 export const metas = {
   seguros: 12,
   creditos: 50000,
@@ -36,42 +40,72 @@ export const metas = {
   tarjetas: 1,
 };
 
-// OBTENER DATOS
-export const obtenerVendedores = () => {
+// INICIALIZAR STORAGE
+const inicializarStorage = () => {
   const data =
-    localStorage.getItem("vendedores");
+    localStorage.getItem(STORAGE_KEY);
 
-  return data
-    ? JSON.parse(data)
-    : vendedoresIniciales;
+  if (!data) {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(vendedoresIniciales)
+    );
+  }
 };
 
-// GUARDAR DATOS
+// OBTENER VENDEDORES
+export const obtenerVendedores = () => {
+  inicializarStorage();
+
+  try {
+    const data =
+      localStorage.getItem(STORAGE_KEY);
+
+    return JSON.parse(data) || [];
+  } catch (error) {
+    console.error(
+      "Error leyendo vendedores:",
+      error
+    );
+
+    return [];
+  }
+};
+
+// GUARDAR VENDEDORES
 export const guardarVendedores = (
   vendedores
 ) => {
   localStorage.setItem(
-    "vendedores",
+    STORAGE_KEY,
     JSON.stringify(vendedores)
   );
 };
 
-// AGREGAR
+// AGREGAR VENDEDOR
 export const agregarVendedor = (
   nuevo
 ) => {
   const vendedores =
     obtenerVendedores();
 
-  vendedores.push({
+  const nuevoVendedor = {
     id: Date.now(),
-    ...nuevo,
-  });
+    nombre: nuevo.nombre || "Sin nombre",
+    seguros: Number(nuevo.seguros) || 0,
+    creditos:
+      Number(nuevo.creditos) || 0,
+    efi: Number(nuevo.efi) || 0,
+    tarjetas:
+      Number(nuevo.tarjetas) || 0,
+  };
+
+  vendedores.push(nuevoVendedor);
 
   guardarVendedores(vendedores);
 };
 
-// ELIMINAR
+// ELIMINAR VENDEDOR
 export const eliminarVendedor = (id) => {
   const vendedores =
     obtenerVendedores();
@@ -83,7 +117,7 @@ export const eliminarVendedor = (id) => {
   guardarVendedores(nuevos);
 };
 
-// ACTUALIZAR
+// ACTUALIZAR VENDEDOR
 export const actualizarVendedor = (
   id,
   datos
@@ -94,9 +128,20 @@ export const actualizarVendedor = (
   const actualizados =
     vendedores.map((v) =>
       v.id === id
-        ? { ...v, ...datos }
+        ? {
+            ...v,
+            ...datos,
+          }
         : v
     );
 
   guardarVendedores(actualizados);
+};
+
+// RESETEAR BASE
+export const resetearDatabase = () => {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(vendedoresIniciales)
+  );
 };

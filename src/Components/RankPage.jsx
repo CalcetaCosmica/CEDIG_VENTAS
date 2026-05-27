@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  vendedores as vendedoresDB,
+  obtenerVendedores,
   metas,
 } from "../data/database";
 
@@ -11,23 +11,44 @@ export default function RankPage() {
   const [vendedores, setVendedores] =
     useState([]);
 
-  // CARGAR DATOS DE LA "BASE"
+  // CARGAR DATOS DEL LOCALSTORAGE
   useEffect(() => {
-    setVendedores([...vendedoresDB]);
+    cargarDatos();
+
+    // ACTUALIZAR AUTOMÁTICAMENTE
+    const interval = setInterval(() => {
+      cargarDatos();
+    }, 1000);
+
+    return () =>
+      clearInterval(interval);
   }, []);
 
-  const calcularPuntaje = (vendedor) => {
+  const cargarDatos = () => {
+    const data =
+      obtenerVendedores();
+
+    setVendedores(data);
+  };
+
+  // CALCULAR PUNTAJE
+  const calcularPuntaje = (
+    vendedor
+  ) => {
     const porcentajeSeguros =
-      vendedor.seguros / metas.seguros;
+      vendedor.seguros /
+      metas.seguros;
 
     const porcentajeCreditos =
-      vendedor.creditos / metas.creditos;
+      vendedor.creditos /
+      metas.creditos;
 
     const porcentajeEFI =
       vendedor.efi / metas.efi;
 
     const porcentajeTarjetas =
-      vendedor.tarjetas / metas.tarjetas;
+      vendedor.tarjetas /
+      metas.tarjetas;
 
     return (
       porcentajeSeguros +
@@ -37,14 +58,18 @@ export default function RankPage() {
     );
   };
 
+  // ORDENAR RANKING
   const ranking = [...vendedores].sort(
     (a, b) =>
       calcularPuntaje(b) -
       calcularPuntaje(a)
   );
 
-  const cumplioMeta = (valor, meta) =>
-    valor >= meta;
+  // VERIFICAR META
+  const cumplioMeta = (
+    valor,
+    meta
+  ) => valor >= meta;
 
   return (
     <div className="min-h-screen bg-[#eef4ff] p-4 md:p-8">
@@ -107,232 +132,248 @@ export default function RankPage() {
 
         {/* CARDS */}
         <div className="space-y-5">
-          {ranking.map((vendedor, index) => {
-            const puntaje =
-              calcularPuntaje(vendedor);
+          {ranking.map(
+            (vendedor, index) => {
+              const puntaje =
+                calcularPuntaje(
+                  vendedor
+                );
 
-            const porcentaje =
-              Math.min(
-                (puntaje / 4) * 100,
-                100
-              );
+              const porcentaje =
+                Math.min(
+                  (puntaje / 4) *
+                    100,
+                  100
+                );
 
-            return (
-              <div
-                key={vendedor.id}
-                className={`rounded-3xl shadow-2xl p-5 transition-all duration-300 border-l-[10px] ${
-                  index === 0
-                    ? "bg-gradient-to-r from-[#072146] to-[#004481] text-white border-yellow-400"
-                    : index === 1
-                    ? "bg-white border-gray-400"
-                    : index === 2
-                    ? "bg-white border-orange-400"
-                    : "bg-white border-[#004481]"
-                }`}
-              >
-                {/* TOP */}
-                <div className="flex justify-between items-center mb-5">
-                  <div>
-                    <h2 className="text-3xl font-bold">
-                      #{index + 1}
-                    </h2>
-
-                    <p
-                      className={`text-xl font-semibold ${
-                        index === 0
-                          ? "text-blue-100"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {vendedor.nombre}
-                    </p>
-                  </div>
-
-                  <div className="text-5xl">
-                    {index === 0
-                      ? "👑"
+              return (
+                <div
+                  key={vendedor.id}
+                  className={`rounded-3xl shadow-2xl p-5 transition-all duration-300 border-l-[10px] ${
+                    index === 0
+                      ? "bg-gradient-to-r from-[#072146] to-[#004481] text-white border-yellow-400"
                       : index === 1
-                      ? "🥈"
+                      ? "bg-white border-gray-400"
                       : index === 2
-                      ? "🥉"
-                      : "🏅"}
-                  </div>
-                </div>
+                      ? "bg-white border-orange-400"
+                      : "bg-white border-[#004481]"
+                  }`}
+                >
+                  {/* TOP */}
+                  <div className="flex justify-between items-center mb-5">
+                    <div>
+                      <h2 className="text-3xl font-bold">
+                        #
+                        {index + 1}
+                      </h2>
 
-                {/* DATOS */}
-                <div className="grid grid-cols-2 gap-3 mb-5">
-                  <div
-                    className={`rounded-2xl p-4 ${
-                      index === 0
-                        ? "bg-white/10"
-                        : "bg-[#f4f8fd]"
-                    }`}
-                  >
-                    <p
-                      className={`text-sm ${
-                        index === 0
-                          ? "text-blue-100"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Seguros
-                    </p>
+                      <p
+                        className={`text-xl font-semibold ${
+                          index === 0
+                            ? "text-blue-100"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {
+                          vendedor.nombre
+                        }
+                      </p>
+                    </div>
 
-                    <p
-                      className={`text-2xl font-bold ${
-                        cumplioMeta(
-                          vendedor.seguros,
-                          metas.seguros
-                        )
-                          ? "text-green-400"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {vendedor.seguros}
-                    </p>
+                    <div className="text-5xl">
+                      {index === 0
+                        ? "👑"
+                        : index === 1
+                        ? "🥈"
+                        : index === 2
+                        ? "🥉"
+                        : "🏅"}
+                    </div>
                   </div>
 
-                  <div
-                    className={`rounded-2xl p-4 ${
-                      index === 0
-                        ? "bg-white/10"
-                        : "bg-[#f4f8fd]"
-                    }`}
-                  >
-                    <p
-                      className={`text-sm ${
-                        index === 0
-                          ? "text-blue-100"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Créditos
-                    </p>
-
-                    <p
-                      className={`text-2xl font-bold ${
-                        cumplioMeta(
-                          vendedor.creditos,
-                          metas.creditos
-                        )
-                          ? "text-green-400"
-                          : "text-red-500"
-                      }`}
-                    >
-                      $
-                      {vendedor.creditos.toLocaleString()}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`rounded-2xl p-4 ${
-                      index === 0
-                        ? "bg-white/10"
-                        : "bg-[#f4f8fd]"
-                    }`}
-                  >
-                    <p
-                      className={`text-sm ${
-                        index === 0
-                          ? "text-blue-100"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      EFI
-                    </p>
-
-                    <p
-                      className={`text-2xl font-bold ${
-                        cumplioMeta(
-                          vendedor.efi,
-                          metas.efi
-                        )
-                          ? "text-green-400"
-                          : "text-red-500"
-                      }`}
-                    >
-                      $
-                      {vendedor.efi.toLocaleString()}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`rounded-2xl p-4 ${
-                      index === 0
-                        ? "bg-white/10"
-                        : "bg-[#f4f8fd]"
-                    }`}
-                  >
-                    <p
-                      className={`text-sm ${
-                        index === 0
-                          ? "text-blue-100"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      TDC
-                    </p>
-
-                    <p
-                      className={`text-2xl font-bold ${
-                        cumplioMeta(
-                          vendedor.tarjetas,
-                          metas.tarjetas
-                        )
-                          ? "text-green-400"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {vendedor.tarjetas}
-                    </p>
-                  </div>
-                </div>
-
-                {/* PROGRESO */}
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span
-                      className={`font-semibold ${
-                        index === 0
-                          ? "text-white"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      Cumplimiento
-                    </span>
-
-                    <span
-                      className={`font-bold ${
-                        index === 0
-                          ? "text-white"
-                          : "text-[#004481]"
-                      }`}
-                    >
-                      {Math.round(
-                        porcentaje
-                      )}
-                      %
-                    </span>
-                  </div>
-
-                  <div
-                    className={`w-full rounded-full h-5 overflow-hidden ${
-                      index === 0
-                        ? "bg-white/20"
-                        : "bg-gray-200"
-                    }`}
-                  >
+                  {/* DATOS */}
+                  <div className="grid grid-cols-2 gap-3 mb-5">
+                    {/* SEGUROS */}
                     <div
-                      className="h-5 rounded-full bg-gradient-to-r from-[#009ee3] to-[#5BBEFF] transition-all duration-700"
-                      style={{
-                        width: `${porcentaje}%`,
-                      }}
-                    ></div>
+                      className={`rounded-2xl p-4 ${
+                        index === 0
+                          ? "bg-white/10"
+                          : "bg-[#f4f8fd]"
+                      }`}
+                    >
+                      <p
+                        className={`text-sm ${
+                          index === 0
+                            ? "text-blue-100"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        Seguros
+                      </p>
+
+                      <p
+                        className={`text-2xl font-bold ${
+                          cumplioMeta(
+                            vendedor.seguros,
+                            metas.seguros
+                          )
+                            ? "text-green-400"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {
+                          vendedor.seguros
+                        }
+                      </p>
+                    </div>
+
+                    {/* CREDITOS */}
+                    <div
+                      className={`rounded-2xl p-4 ${
+                        index === 0
+                          ? "bg-white/10"
+                          : "bg-[#f4f8fd]"
+                      }`}
+                    >
+                      <p
+                        className={`text-sm ${
+                          index === 0
+                            ? "text-blue-100"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        Créditos
+                      </p>
+
+                      <p
+                        className={`text-2xl font-bold ${
+                          cumplioMeta(
+                            vendedor.creditos,
+                            metas.creditos
+                          )
+                            ? "text-green-400"
+                            : "text-red-500"
+                        }`}
+                      >
+                        $
+                        {vendedor.creditos.toLocaleString()}
+                      </p>
+                    </div>
+
+                    {/* EFI */}
+                    <div
+                      className={`rounded-2xl p-4 ${
+                        index === 0
+                          ? "bg-white/10"
+                          : "bg-[#f4f8fd]"
+                      }`}
+                    >
+                      <p
+                        className={`text-sm ${
+                          index === 0
+                            ? "text-blue-100"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        EFI
+                      </p>
+
+                      <p
+                        className={`text-2xl font-bold ${
+                          cumplioMeta(
+                            vendedor.efi,
+                            metas.efi
+                          )
+                            ? "text-green-400"
+                            : "text-red-500"
+                        }`}
+                      >
+                        $
+                        {vendedor.efi.toLocaleString()}
+                      </p>
+                    </div>
+
+                    {/* TDC */}
+                    <div
+                      className={`rounded-2xl p-4 ${
+                        index === 0
+                          ? "bg-white/10"
+                          : "bg-[#f4f8fd]"
+                      }`}
+                    >
+                      <p
+                        className={`text-sm ${
+                          index === 0
+                            ? "text-blue-100"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        TDC
+                      </p>
+
+                      <p
+                        className={`text-2xl font-bold ${
+                          cumplioMeta(
+                            vendedor.tarjetas,
+                            metas.tarjetas
+                          )
+                            ? "text-green-400"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {
+                          vendedor.tarjetas
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* PROGRESO */}
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span
+                        className={`font-semibold ${
+                          index === 0
+                            ? "text-white"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        Cumplimiento
+                      </span>
+
+                      <span
+                        className={`font-bold ${
+                          index === 0
+                            ? "text-white"
+                            : "text-[#004481]"
+                        }`}
+                      >
+                        {Math.round(
+                          porcentaje
+                        )}
+                        %
+                      </span>
+                    </div>
+
+                    <div
+                      className={`w-full rounded-full h-5 overflow-hidden ${
+                        index === 0
+                          ? "bg-white/20"
+                          : "bg-gray-200"
+                      }`}
+                    >
+                      <div
+                        className="h-5 rounded-full bg-gradient-to-r from-[#009ee3] to-[#5BBEFF] transition-all duration-700"
+                        style={{
+                          width: `${porcentaje}%`,
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }
+          )}
         </div>
       </div>
     </div>
