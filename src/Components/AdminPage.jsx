@@ -3,18 +3,18 @@
 import { useState } from "react";
 
 import {
-  vendedores,
+  obtenerVendedores,
   agregarVendedor,
   eliminarVendedor,
   actualizarVendedor,
 } from "../data/database";
 
 export default function AdminPage() {
-  const [reload, setReload] =
-    useState(false);
-
   const [guardando, setGuardando] =
     useState(false);
+
+  const [vendedores, setVendedores] =
+    useState(obtenerVendedores());
 
   const [nuevo, setNuevo] = useState({
     nombre: "",
@@ -24,8 +24,13 @@ export default function AdminPage() {
     tarjetas: 0,
   });
 
+  // AGREGAR
   const agregar = () => {
+    if (!nuevo.nombre) return;
+
     agregarVendedor(nuevo);
+
+    setVendedores(obtenerVendedores());
 
     setNuevo({
       nombre: "",
@@ -34,11 +39,9 @@ export default function AdminPage() {
       efi: 0,
       tarjetas: 0,
     });
-
-    setReload(!reload);
   };
 
-  // GUARDAR CAMBIOS
+  // GUARDAR
   const guardarCambios = () => {
     setGuardando(true);
 
@@ -48,12 +51,35 @@ export default function AdminPage() {
       alert(
         "Cambios guardados correctamente ✅"
       );
-    }, 2000);
+    }, 1500);
+  };
+
+  // ACTUALIZAR INPUTS
+  const actualizarCampo = (
+    id,
+    campo,
+    valor
+  ) => {
+    actualizarVendedor(id, {
+      [campo]:
+        campo === "nombre"
+          ? valor
+          : Number(valor),
+    });
+
+    setVendedores(obtenerVendedores());
+  };
+
+  // ELIMINAR
+  const eliminar = (id) => {
+    eliminarVendedor(id);
+
+    setVendedores(obtenerVendedores());
   };
 
   return (
     <div className="min-h-screen bg-[#eef4ff] p-4">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* HEADER */}
         <div className="bg-gradient-to-r from-[#072146] to-[#004481] rounded-3xl shadow-2xl p-6 mb-6">
           <h1 className="text-3xl font-bold text-white">
@@ -65,13 +91,13 @@ export default function AdminPage() {
           </p>
         </div>
 
-        {/* FORMULARIO */}
+        {/* AGREGAR */}
         <div className="bg-white rounded-3xl shadow-2xl p-6 mb-6">
-          <h2 className="text-2xl font-bold text-[#004481] mb-4">
+          <h2 className="text-2xl font-bold text-[#004481] mb-5">
             Agregar vendedor
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <input
               placeholder="Nombre"
               className="border-2 border-blue-100 p-3 rounded-2xl outline-none focus:border-[#004481]"
@@ -84,96 +110,67 @@ export default function AdminPage() {
               }
             />
 
-            {/* SEGUROS */}
-            <div>
-              <input
-                type="number"
-                placeholder="Seguros"
-                className="border-2 border-blue-100 p-3 rounded-2xl w-full outline-none focus:border-[#004481]"
-                value={nuevo.seguros}
-                onChange={(e) =>
-                  setNuevo({
-                    ...nuevo,
-                    seguros: Number(
-                      e.target.value
-                    ),
-                  })
-                }
-              />
+            <input
+              type="number"
+              placeholder="Seguros"
+              className="border-2 border-blue-100 p-3 rounded-2xl outline-none focus:border-[#004481]"
+              value={nuevo.seguros}
+              onChange={(e) =>
+                setNuevo({
+                  ...nuevo,
+                  seguros: Number(
+                    e.target.value
+                  ),
+                })
+              }
+            />
 
-              <p className="text-xs text-blue-500 mt-1">
-                📈 Subiendo seguros
-              </p>
-            </div>
+            <input
+              type="number"
+              placeholder="Consumo"
+              className="border-2 border-blue-100 p-3 rounded-2xl outline-none focus:border-[#004481]"
+              value={nuevo.creditos}
+              onChange={(e) =>
+                setNuevo({
+                  ...nuevo,
+                  creditos: Number(
+                    e.target.value
+                  ),
+                })
+              }
+            />
 
-            {/* CREDITOS */}
-            <div>
-              <input
-                type="number"
-                placeholder="Consumo"
-                className="border-2 border-blue-100 p-3 rounded-2xl w-full outline-none focus:border-[#004481]"
-                value={nuevo.creditos}
-                onChange={(e) =>
-                  setNuevo({
-                    ...nuevo,
-                    creditos: Number(
-                      e.target.value
-                    ),
-                  })
-                }
-              />
+            <input
+              type="number"
+              placeholder="EFI"
+              className="border-2 border-blue-100 p-3 rounded-2xl outline-none focus:border-[#004481]"
+              value={nuevo.efi}
+              onChange={(e) =>
+                setNuevo({
+                  ...nuevo,
+                  efi: Number(
+                    e.target.value
+                  ),
+                })
+              }
+            />
 
-              <p className="text-xs text-blue-500 mt-1">
-                💳 Subiendo consumo
-              </p>
-            </div>
-
-            {/* EFI */}
-            <div>
-              <input
-                type="number"
-                placeholder="EFI"
-                className="border-2 border-blue-100 p-3 rounded-2xl w-full outline-none focus:border-[#004481]"
-                value={nuevo.efi}
-                onChange={(e) =>
-                  setNuevo({
-                    ...nuevo,
-                    efi: Number(
-                      e.target.value
-                    ),
-                  })
-                }
-              />
-
-              <p className="text-xs text-blue-500 mt-1">
-                🏦 Subiendo EFI
-              </p>
-            </div>
-
-            {/* TDC */}
-            <div>
-              <input
-                type="number"
-                placeholder="TDC"
-                className="border-2 border-blue-100 p-3 rounded-2xl w-full outline-none focus:border-[#004481]"
-                value={nuevo.tarjetas}
-                onChange={(e) =>
-                  setNuevo({
-                    ...nuevo,
-                    tarjetas: Number(
-                      e.target.value
-                    ),
-                  })
-                }
-              />
-
-              <p className="text-xs text-blue-500 mt-1">
-                💠 Subiendo TDC
-              </p>
-            </div>
+            <input
+              type="number"
+              placeholder="TDC"
+              className="border-2 border-blue-100 p-3 rounded-2xl outline-none focus:border-[#004481]"
+              value={nuevo.tarjetas}
+              onChange={(e) =>
+                setNuevo({
+                  ...nuevo,
+                  tarjetas: Number(
+                    e.target.value
+                  ),
+                })
+              }
+            />
           </div>
 
-          {/* BOTONES */}
           <div className="flex gap-4 mt-6">
             <button
               onClick={agregar}
@@ -197,65 +194,126 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* LISTA */}
-        <div className="space-y-4">
+        {/* VENDEDORES */}
+        <div className="space-y-5">
           {vendedores.map((v) => (
             <div
               key={v.id}
               className="bg-white rounded-3xl shadow-xl p-5"
             >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#004481]">
-                    {v.nombre}
-                  </h2>
-
-                  <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
-                    <p>
-                      📈 Seguros:
-                      {" "}
-                      <span className="font-bold">
-                        {v.seguros}
-                      </span>
-                    </p>
-
-                    <p>
-                      💳 Consumo:
-                      {" "}
-                      <span className="font-bold">
-                        $
-                        {v.creditos.toLocaleString()}
-                      </span>
-                    </p>
-
-                    <p>
-                      🏦 EFI:
-                      {" "}
-                      <span className="font-bold">
-                        $
-                        {v.efi.toLocaleString()}
-                      </span>
-                    </p>
-
-                    <p>
-                      💠 TDC:
-                      {" "}
-                      <span className="font-bold">
-                        {v.tarjetas}
-                      </span>
-                    </p>
-                  </div>
-                </div>
+              {/* HEADER CARD */}
+              <div className="flex justify-between items-center mb-5">
+                <h2 className="text-2xl font-bold text-[#004481]">
+                  {v.nombre}
+                </h2>
 
                 <button
-                  onClick={() => {
-                    eliminarVendedor(v.id);
-                    setReload(!reload);
-                  }}
+                  onClick={() =>
+                    eliminar(v.id)
+                  }
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-2xl transition"
                 >
                   Eliminar
                 </button>
+              </div>
+
+              {/* INPUTS */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* SEGUROS */}
+                <div className="bg-[#f4f8fd] rounded-2xl p-4">
+                  <p className="text-sm text-gray-500 mb-2">
+                    📈 Seguros
+                  </p>
+
+                  <input
+                    type="number"
+                    value={v.seguros}
+                    onChange={(e) =>
+                      actualizarCampo(
+                        v.id,
+                        "seguros",
+                        e.target.value
+                      )
+                    }
+                    className="w-full border-2 border-blue-100 p-2 rounded-xl outline-none focus:border-[#004481]"
+                  />
+
+                  <p className="text-xs text-blue-500 mt-2">
+                    Subiendo seguros...
+                  </p>
+                </div>
+
+                {/* CONSUMO */}
+                <div className="bg-[#f4f8fd] rounded-2xl p-4">
+                  <p className="text-sm text-gray-500 mb-2">
+                    💳 Consumo
+                  </p>
+
+                  <input
+                    type="number"
+                    value={v.creditos}
+                    onChange={(e) =>
+                      actualizarCampo(
+                        v.id,
+                        "creditos",
+                        e.target.value
+                      )
+                    }
+                    className="w-full border-2 border-blue-100 p-2 rounded-xl outline-none focus:border-[#004481]"
+                  />
+
+                  <p className="text-xs text-blue-500 mt-2">
+                    Subiendo consumo...
+                  </p>
+                </div>
+
+                {/* EFI */}
+                <div className="bg-[#f4f8fd] rounded-2xl p-4">
+                  <p className="text-sm text-gray-500 mb-2">
+                    🏦 EFI
+                  </p>
+
+                  <input
+                    type="number"
+                    value={v.efi}
+                    onChange={(e) =>
+                      actualizarCampo(
+                        v.id,
+                        "efi",
+                        e.target.value
+                      )
+                    }
+                    className="w-full border-2 border-blue-100 p-2 rounded-xl outline-none focus:border-[#004481]"
+                  />
+
+                  <p className="text-xs text-blue-500 mt-2">
+                    Subiendo EFI...
+                  </p>
+                </div>
+
+                {/* TDC */}
+                <div className="bg-[#f4f8fd] rounded-2xl p-4">
+                  <p className="text-sm text-gray-500 mb-2">
+                    💠 TDC
+                  </p>
+
+                  <input
+                    type="number"
+                    value={v.tarjetas}
+                    onChange={(e) =>
+                      actualizarCampo(
+                        v.id,
+                        "tarjetas",
+                        e.target.value
+                      )
+                    }
+                    className="w-full border-2 border-blue-100 p-2 rounded-xl outline-none focus:border-[#004481]"
+                  />
+
+                  <p className="text-xs text-blue-500 mt-2">
+                    Subiendo TDC...
+                  </p>
+                </div>
               </div>
             </div>
           ))}

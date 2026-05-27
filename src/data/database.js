@@ -1,6 +1,6 @@
 // src/data/database.js
 
-export let vendedores = [
+const vendedoresIniciales = [
   {
     id: 1,
     nombre: "Carlos",
@@ -36,26 +36,67 @@ export const metas = {
   tarjetas: 1,
 };
 
-export const agregarVendedor = (nuevo) => {
+// OBTENER DATOS
+export const obtenerVendedores = () => {
+  const data =
+    localStorage.getItem("vendedores");
+
+  return data
+    ? JSON.parse(data)
+    : vendedoresIniciales;
+};
+
+// GUARDAR DATOS
+export const guardarVendedores = (
+  vendedores
+) => {
+  localStorage.setItem(
+    "vendedores",
+    JSON.stringify(vendedores)
+  );
+};
+
+// AGREGAR
+export const agregarVendedor = (
+  nuevo
+) => {
+  const vendedores =
+    obtenerVendedores();
+
   vendedores.push({
     id: Date.now(),
     ...nuevo,
   });
+
+  guardarVendedores(vendedores);
 };
 
+// ELIMINAR
 export const eliminarVendedor = (id) => {
-  vendedores = vendedores.filter(
+  const vendedores =
+    obtenerVendedores();
+
+  const nuevos = vendedores.filter(
     (v) => v.id !== id
   );
+
+  guardarVendedores(nuevos);
 };
 
+// ACTUALIZAR
 export const actualizarVendedor = (
   id,
   datos
 ) => {
-  vendedores = vendedores.map((v) =>
-    v.id === id
-      ? { ...v, ...datos }
-      : v
-  );
+  const vendedores =
+    obtenerVendedores();
+
+  const actualizados =
+    vendedores.map((v) =>
+      v.id === id
+        ? { ...v, ...datos }
+        : v
+    );
+
+  guardarVendedores(actualizados);
 };
